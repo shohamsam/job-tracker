@@ -97,6 +97,11 @@ tbody tr:hover > td { background: #FAFBFF !important; }
 tbody td { padding: 7px 10px; vertical-align: middle; white-space: nowrap; font-size: 12px; }
 td.section-divider { border-left: 2px solid var(--border); }
 
+thead th:first-child { position: sticky; left: 0; z-index: 3; }
+thead th:last-child  { position: sticky; right: 0; z-index: 3; }
+tbody td:first-child { position: sticky; left: 0; z-index: 1; background: white; box-shadow: 2px 0 4px rgba(0,0,0,0.05); }
+tbody td:last-child  { position: sticky; right: 0; z-index: 1; background: white; box-shadow: -2px 0 4px rgba(0,0,0,0.05); }
+
 tr.row-offer > td { background: #F0FDF4; }
 tr.row-rejected > td { background: #FFF5F5; }
 tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
