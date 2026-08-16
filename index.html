@@ -35,7 +35,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; min-height: 100vh; }
 
-/* HEADER */
 .header {
   background: var(--white);
   border-bottom: 1px solid var(--border);
@@ -52,24 +51,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .header h1 span { color: var(--primary); }
 .header-right { display: flex; gap: 8px; align-items: center; }
 .filter-select {
-  font-size: 12px;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
-  color: var(--text);
+  font-size: 12px; padding: 6px 10px; border: 1px solid var(--border);
+  border-radius: 6px; background: white; cursor: pointer; color: var(--text);
 }
 .btn-add {
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
+  background: var(--primary); color: white; border: none;
+  border-radius: var(--radius); padding: 7px 14px; font-size: 13px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
 }
 .btn-add:hover { opacity: 0.88; }
 .btn-secondary {
@@ -79,128 +67,85 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 }
 .btn-secondary:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
-/* STATS */
 .stats {
-  display: flex;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
+  display: flex; gap: 8px; padding: 10px 20px;
+  background: var(--white); border-bottom: 1px solid var(--border); flex-wrap: wrap;
 }
 .stat {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  background: var(--bg);
-  border-radius: 20px;
-  font-size: 12px;
-  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 5px; padding: 5px 12px;
+  background: var(--bg); border-radius: 20px; font-size: 12px; border: 1px solid var(--border);
 }
 .stat-num { font-weight: 700; font-size: 14px; }
 .stat-label { color: var(--muted); }
 
-/* TABLE */
 .table-wrap { overflow-x: auto; padding: 16px 20px 60px; }
-
 table {
-  border-collapse: collapse;
-  width: max-content;
-  min-width: 100%;
-  background: var(--white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  overflow: hidden;
+  border-collapse: collapse; width: max-content; min-width: 100%;
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
 }
-
 thead th {
-  background: #F9FAFB;
-  border-bottom: 2px solid var(--border);
-  padding: 8px 10px;
-  text-align: left;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+  background: #F9FAFB; border-bottom: 2px solid var(--border);
+  padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
 }
 thead th.stage-header { text-align: center; background: #F3F0FF; color: var(--primary); }
 thead th.section-divider { border-left: 2px solid var(--border); }
-
 tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover > td { background: #FAFBFF !important; }
-
-tbody td {
-  padding: 7px 10px;
-  vertical-align: middle;
-  white-space: nowrap;
-  font-size: 12px;
-}
+tbody td { padding: 7px 10px; vertical-align: middle; white-space: nowrap; font-size: 12px; }
 td.section-divider { border-left: 2px solid var(--border); }
 
-/* ROW STATUS COLORS */
 tr.row-offer > td { background: #F0FDF4; }
 tr.row-rejected > td { background: #FFF5F5; }
 tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
+tr.row-not_pursuing > td { background: #F9FAFB; opacity: 0.5; }
 
-/* COMPANY CELL */
 .company-cell { display: flex; align-items: center; gap: 5px; min-width: 130px; }
 .company-name { font-weight: 600; font-size: 13px; }
 .info-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--muted); font-size: 12px; padding: 1px 3px;
-  border-radius: 3px; line-height: 1; opacity: 0.6;
+  background: none; border: none; cursor: pointer; color: var(--muted);
+  font-size: 12px; padding: 1px 3px; border-radius: 3px; line-height: 1; opacity: 0.6;
 }
 .info-btn:hover { opacity: 1; color: var(--primary); background: var(--primary-light); }
 
-/* LINK */
 .link-icon { color: var(--blue); text-decoration: none; font-size: 14px; }
 .link-icon:hover { color: var(--primary); }
 .no-link { color: var(--border); }
 
-/* STAGE CELL */
 .stage-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 82px; }
 .stage-cell input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); }
 .stage-date {
   font-size: 10px; border: 1px solid var(--border); border-radius: 4px;
-  padding: 1px 4px; color: var(--muted); width: 86px; background: transparent;
-  font-family: inherit;
+  padding: 1px 4px; color: var(--muted); width: 86px; background: transparent; font-family: inherit;
 }
 .stage-date:focus { outline: none; border-color: var(--primary); }
 .stage-date-hidden { visibility: hidden; }
 
-/* COVER LETTER */
 .cl-select {
   font-size: 11px; border: 1px solid var(--border); border-radius: 4px;
-  padding: 3px 6px; cursor: pointer; background: transparent; font-family: inherit;
-  width: 110px;
+  padding: 3px 6px; cursor: pointer; background: transparent; font-family: inherit; width: 110px;
 }
 .cl-sent { background: var(--green-bg); color: var(--green); border-color: #86EFAC; }
 .cl-not_sent { background: var(--red-bg); color: var(--red); border-color: #FCA5A5; }
 .cl-not_required { background: var(--yellow-bg); color: var(--yellow); border-color: #FCD34D; }
 
-/* CHECKBOXES */
 .simple-check { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); display: block; margin: auto; }
 
-/* STATUS BADGE */
 .status-badge {
   display: inline-block; padding: 2px 8px; border-radius: 10px;
-  font-size: 11px; font-weight: 500; cursor: pointer; user-select: none;
-  white-space: nowrap;
+  font-size: 11px; font-weight: 500; cursor: pointer; user-select: none; white-space: nowrap;
 }
 .s-active { background: var(--blue-bg); color: var(--blue); }
 .s-offer { background: var(--green-bg); color: var(--green); }
 .s-rejected { background: var(--red-bg); color: var(--red); }
 .s-withdrawn { background: #F3F4F6; color: var(--muted); }
+.s-not_pursuing { background: #F3F4F6; color: #9CA3AF; text-decoration: line-through; }
 
-/* EDITABLE TEXT CELL */
 .editable-cell {
   cursor: pointer; border-radius: 4px; padding: 2px 4px;
-  min-width: 60px; display: inline-block;
-  color: var(--text);
+  min-width: 60px; display: inline-block; color: var(--text);
 }
 .editable-cell.empty { color: var(--border); }
 .editable-cell:hover { background: var(--primary-light); color: var(--primary) !important; }
@@ -211,7 +156,6 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
 }
 .inline-edit:focus { outline: none; }
 
-/* NOTES */
 .notes-cell {
   max-width: 140px; overflow: hidden; text-overflow: ellipsis;
   cursor: pointer; color: var(--muted); font-size: 11px;
@@ -220,17 +164,14 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
 .notes-cell.empty { color: var(--border); }
 .notes-cell:hover { background: var(--primary-light); color: var(--primary); }
 
-/* ACTION BUTTONS */
 .act-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 3px 5px; border-radius: 4px; font-size: 13px; }
 .act-btn:hover { background: var(--red-bg); color: var(--red); }
 .act-edit:hover { background: var(--primary-light); color: var(--primary); }
 
-/* EMPTY STATE */
 .empty-state { text-align: center; padding: 48px; color: var(--muted); }
 .empty-state .icon { font-size: 32px; margin-bottom: 10px; }
 .empty-state h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
 
-/* MODAL OVERLAY */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.45); z-index: 1000;
@@ -251,8 +192,7 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
 .form-row select,
 .form-row textarea {
   width: 100%; padding: 8px 10px; border: 1px solid var(--border);
-  border-radius: var(--radius); font-size: 13px; font-family: inherit;
-  color: var(--text);
+  border-radius: var(--radius); font-size: 13px; font-family: inherit; color: var(--text);
 }
 .form-row textarea { height: 72px; resize: vertical; }
 .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
@@ -269,8 +209,7 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
 .btn-gen:disabled { opacity: 0.5; cursor: not-allowed; }
 .summary-hint {
   font-size: 11px; color: var(--muted); background: #F9FAFB;
-  border-radius: 6px; padding: 7px 10px; margin-top: 6px;
-  line-height: 1.5; display: none;
+  border-radius: 6px; padding: 7px 10px; margin-top: 6px; line-height: 1.5; display: none;
 }
 .summary-hint.show { display: block; }
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -280,33 +219,25 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
 .btn-save { background: var(--primary); color: white; border: none; border-radius: var(--radius); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn-save:hover { opacity: 0.88; }
 
-/* NOTES MODAL */
 .notes-modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.35); z-index: 900;
   align-items: center; justify-content: center;
 }
 .notes-modal-overlay.open { display: flex; }
-.notes-modal {
-  background: white; border-radius: 10px; padding: 20px;
-  width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-}
+.notes-modal { background: white; border-radius: 10px; padding: 20px; width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
 .notes-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
 .notes-modal textarea {
-  width: 100%; height: 130px; padding: 9px;
-  border: 1px solid var(--border); border-radius: 6px;
-  font-size: 13px; font-family: inherit; resize: vertical;
+  width: 100%; height: 130px; padding: 9px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 13px; font-family: inherit; resize: vertical;
 }
 .notes-modal textarea:focus { outline: none; border-color: var(--primary); }
 .notes-modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
-/* POPOVER */
 .popover {
-  display: none; position: fixed; background: white;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 12px 14px; width: 280px; font-size: 12px;
-  line-height: 1.6; color: var(--text);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 600;
+  display: none; position: fixed; background: white; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px; width: 280px; font-size: 12px;
+  line-height: 1.6; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 600;
 }
 .popover.open { display: block; }
 .popover h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--primary); }
@@ -324,6 +255,7 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
       <option value="offer">Offer</option>
       <option value="rejected">Rejected</option>
       <option value="withdrawn">Withdrawn</option>
+      <option value="not_pursuing">Not pursuing</option>
     </select>
     <button class="btn-secondary" onclick="exportData()" title="Download your data as a JSON file">Export</button>
     <button class="btn-secondary" onclick="document.getElementById('importFile').click()" title="Restore from a previously exported JSON file">Import</button>
@@ -372,7 +304,7 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
       <label>Job URL</label>
       <div class="url-row">
         <input type="url" id="f-link" placeholder="https://...">
-        <button class="btn-gen" id="genBtn" onclick="generateSummary()">✨ Auto-fill</button>
+        <button class="btn-gen" id="genBtn" onclick="generateSummary()">Auto-fill</button>
       </div>
       <div class="summary-hint" id="summaryHint"></div>
     </div>
@@ -412,6 +344,7 @@ tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
         <option value="offer">Offer</option>
         <option value="rejected">Rejected</option>
         <option value="withdrawn">Withdrawn</option>
+        <option value="not_pursuing">Not pursuing</option>
       </select>
     </div>
     <div class="form-row">
@@ -451,22 +384,18 @@ let editingId = null;
 let notesJobId = null;
 
 function uid() { return Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
-
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function fmtDate(d) {
   if (!d) return '';
   const p = d.split('-');
   if (p.length !== 3) return d;
   return p[2] + '/' + p[1] + '/' + p[0].slice(2);
 }
-
 function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-// ─── DEFAULT DATA ────────────────────────────────────
 function defaultJobs() {
   return [
     { id:uid(), company:'Nebius', link:'https://careers.nebius.com/?gh_jid=4766823101',
@@ -513,7 +442,6 @@ function defaultJobs() {
   ];
 }
 
-// ─── PERSISTENCE ─────────────────────────────────────
 function load() {
   try {
     const s = localStorage.getItem(STORAGE_KEY);
@@ -522,7 +450,6 @@ function load() {
 }
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs)); }
 
-// ─── STATS ───────────────────────────────────────────
 function renderStats() {
   const total = jobs.length;
   const active = jobs.filter(j => j.status === 'active').length;
@@ -540,26 +467,21 @@ function renderStats() {
   `;
 }
 
-// ─── RENDER TABLE ─────────────────────────────────────
 function renderTable() {
   const filter = document.getElementById('filterStatus').value;
   const list = filter ? jobs.filter(j => j.status === filter) : jobs;
   const tbody = document.getElementById('tableBody');
-
   if (!list.length) {
     tbody.innerHTML = `<tr><td colspan="16"><div class="empty-state"><div class="icon">📋</div><h3>No jobs yet</h3><p>Click "+ Add Job" to start tracking</p></div></td></tr>`;
     renderStats(); return;
   }
-
   tbody.innerHTML = list.map(j => {
     const clCls = j.coverLetter ? 'cl-' + j.coverLetter : '';
-    const clLabel = {sent:'Sent', not_sent:'Not Sent', not_required:'Not Required'}[j.coverLetter] || '-';
-    const rowCls = j.status === 'offer' ? 'row-offer' : j.status === 'rejected' ? 'row-rejected' : j.status === 'withdrawn' ? 'row-withdrawn' : '';
+    const rowCls = j.status === 'offer' ? 'row-offer' : j.status === 'rejected' ? 'row-rejected' : j.status === 'withdrawn' ? 'row-withdrawn' : j.status === 'not_pursuing' ? 'row-not_pursuing' : '';
     const sCls = 's-' + (j.status || 'active');
-    const sLabel = {active:'Active', offer:'Offer', rejected:'Rejected', withdrawn:'Withdrawn'}[j.status] || 'Active';
+    const sLabel = {active:'Active', offer:'Offer', rejected:'Rejected', withdrawn:'Withdrawn', not_pursuing:'Not pursuing'}[j.status] || 'Active';
     const notesText = j.notes ? (j.notes.length > 28 ? j.notes.slice(0,28) + '...' : j.notes) : '+ notes';
     const notesCls = j.notes ? '' : 'empty';
-
     const stCell = (key) => {
       const s = j.stages[key];
       return `<td class="${key==='initialCall'?'section-divider':''}">
@@ -568,15 +490,12 @@ function renderTable() {
           <input type="date" class="stage-date${s.done?'':' stage-date-hidden'}" value="${esc(s.date)}" onchange="stageDate('${j.id}','${key}',this.value)">
         </div></td>`;
     };
-
     return `<tr class="${rowCls}" data-id="${j.id}">
-      <td>
-        <div class="company-cell">
-          <span class="company-name">${esc(j.company)}</span>
-          ${j.summary ? `<button class="info-btn" onclick="showPop(event,'${j.id}')" title="Job summary">i</button>` : ''}
-        </div>
-      </td>
-      <td>${j.link ? `<a href="${esc(j.link)}" target="_blank" class="link-icon" title="Open job posting">&#x1F517;</a>` : '<span class="no-link">-</span>'}</td>
+      <td><div class="company-cell">
+        <span class="company-name">${esc(j.company)}</span>
+        ${j.summary ? `<button class="info-btn" onclick="showPop(event,'${j.id}')" title="Job summary">i</button>` : ''}
+      </div></td>
+      <td>${j.link ? `<a href="${esc(j.link)}" target="_blank" class="link-icon">&#x1F517;</a>` : '<span class="no-link">-</span>'}</td>
       <td><span class="editable-cell${j.poc?'':' empty'}" onclick="inlineEdit('${j.id}','poc',this)">${esc(j.poc||'+ add')}</span></td>
       <td>
         <select class="cl-select ${clCls}" onchange="updateF('${j.id}','coverLetter',this.value);updateCLStyle(this)">
@@ -587,11 +506,7 @@ function renderTable() {
         </select>
       </td>
       <td><span class="editable-cell${j.appliedDate?'':' empty'}" style="font-size:11px;color:var(--muted)" onclick="inlineEditDate('${j.id}','appliedDate',this)">${j.appliedDate?fmtDate(j.appliedDate):'+ date'}</span></td>
-      ${stCell('initialCall')}
-      ${stCell('first')}
-      ${stCell('second')}
-      ${stCell('third')}
-      ${stCell('fourth')}
+      ${stCell('initialCall')}${stCell('first')}${stCell('second')}${stCell('third')}${stCell('fourth')}
       <td style="text-align:center"><input type="checkbox" class="simple-check" ${j.homeAssignment?'checked':''} onchange="updateF('${j.id}','homeAssignment',this.checked)"></td>
       <td style="text-align:center"><input type="checkbox" class="simple-check" ${j.whiteboard?'checked':''} onchange="updateF('${j.id}','whiteboard',this.checked)"></td>
       <td class="section-divider"><span class="editable-cell${j.location?'':' empty'}" onclick="inlineEdit('${j.id}','location',this)">${esc(j.location||'+ add')}</span></td>
@@ -603,11 +518,9 @@ function renderTable() {
       </td>
     </tr>`;
   }).join('');
-
   renderStats();
 }
 
-// ─── STAGE ───────────────────────────────────────────
 function toggleStage(id, key, checked) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   j.stages[key].done = checked;
@@ -618,8 +531,6 @@ function stageDate(id, key, val) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   j.stages[key].date = val; save();
 }
-
-// ─── FIELD UPDATES ────────────────────────────────────
 function updateF(id, field, value) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   j[field] = value; save();
@@ -627,7 +538,6 @@ function updateF(id, field, value) {
 function updateCLStyle(sel) {
   sel.className = 'cl-select' + (sel.value ? ' cl-' + sel.value : '');
 }
-
 function inlineEdit(id, field, cell) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   const val = j[field] || '';
@@ -639,7 +549,6 @@ function inlineEdit(id, field, cell) {
   inp.addEventListener('blur', done);
   inp.addEventListener('keydown', e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape') renderTable(); });
 }
-
 function inlineEditDate(id, field, cell) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   const inp = document.createElement('input');
@@ -649,9 +558,8 @@ function inlineEditDate(id, field, cell) {
   inp.addEventListener('blur', done);
   inp.addEventListener('change', done);
 }
-
 function cycleStatus(id) {
-  const statuses = ['active','offer','rejected','withdrawn'];
+  const statuses = ['active','offer','rejected','withdrawn','not_pursuing'];
   const j = jobs.find(x=>x.id===id); if(!j) return;
   j.status = statuses[(statuses.indexOf(j.status||'active')+1) % statuses.length];
   save(); renderTable();
@@ -660,8 +568,6 @@ function deleteJob(id) {
   if (!confirm('Remove this job?')) return;
   jobs = jobs.filter(x=>x.id!==id); save(); renderTable();
 }
-
-// ─── NOTES ───────────────────────────────────────────
 function openNotes(id) {
   const j = jobs.find(x=>x.id===id); if(!j) return;
   notesJobId = id;
@@ -673,11 +579,10 @@ function openNotes(id) {
 function closeNotes() { document.getElementById('notesOverlay').classList.remove('open'); notesJobId = null; }
 function saveNotes() {
   if (!notesJobId) return;
-  const j = jobs.find(x=>x.id===notesJobId); if(j) { j.notes = document.getElementById('notesMTextarea').value; save(); renderTable(); }
+  const j = jobs.find(x=>x.id===notesJobId);
+  if(j) { j.notes = document.getElementById('notesMTextarea').value; save(); renderTable(); }
   closeNotes();
 }
-
-// ─── POPOVER ─────────────────────────────────────────
 let popOpen = false;
 function showPop(e, id) {
   e.stopPropagation();
@@ -692,8 +597,6 @@ function showPop(e, id) {
 }
 function closePop() { document.getElementById('summaryPop').classList.remove('open'); popOpen = false; }
 document.addEventListener('click', () => { if(popOpen) closePop(); });
-
-// ─── ADD / EDIT MODAL ─────────────────────────────────
 function openAddModal() {
   editingId = null;
   document.getElementById('modalTitle').textContent = 'Add Job';
@@ -746,14 +649,12 @@ function saveJob() {
   }
   save(); renderTable(); closeModal();
 }
-
-// ─── AUTO SUMMARY ─────────────────────────────────────
 async function generateSummary() {
   const url = document.getElementById('f-link').value.trim();
   if (!url) { alert('Enter a job URL first.'); return; }
   const btn = document.getElementById('genBtn');
   const hint = document.getElementById('summaryHint');
-  btn.disabled = true; btn.textContent = '⏳ Fetching...';
+  btn.disabled = true; btn.textContent = 'Fetching...';
   hint.className = 'summary-hint show';
   hint.textContent = 'Fetching job page...';
   try {
@@ -767,7 +668,6 @@ async function generateSummary() {
     );
     document.getElementById('f-summary').value = summary;
     hint.textContent = 'Done - summary added above.';
-    // Try to auto-fill company name if empty
     const cn = document.getElementById('f-company');
     if (!cn.value) {
       const m = raw.match(/at\s+([A-Z][A-Za-z\s&]{2,30?})\b/);
@@ -776,17 +676,14 @@ async function generateSummary() {
   } catch(err) {
     hint.textContent = 'Could not auto-fetch (page may be JS-rendered). Enter summary manually.';
   }
-  btn.disabled = false; btn.textContent = '✨ Auto-fill';
+  btn.disabled = false; btn.textContent = 'Auto-fill';
 }
-
-// ─── KEYBOARD SHORTCUTS ───────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeModal(); closeNotes(); closePop(); }
 });
 document.getElementById('addModal').addEventListener('click', e => { if(e.target === document.getElementById('addModal')) closeModal(); });
 document.getElementById('notesOverlay').addEventListener('click', e => { if(e.target === document.getElementById('notesOverlay')) closeNotes(); });
 
-// ─── EXPORT / IMPORT ──────────────────────────────────
 function exportData() {
   const data = localStorage.getItem(STORAGE_KEY) || JSON.stringify(jobs);
   const blob = new Blob([data], { type: 'application/json' });
@@ -797,7 +694,6 @@ function exportData() {
   a.click();
   URL.revokeObjectURL(url);
 }
-
 function importData(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -818,7 +714,6 @@ function importData(e) {
   reader.readAsText(file);
 }
 
-// ─── INIT ─────────────────────────────────────────────
 load();
 renderTable();
 </script>
