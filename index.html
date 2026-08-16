@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Job Application Tracker",
+  "mcp_tools": ["mcp__workspace__web_fetch"],
+  "schemaVersion": 1,
+  "description": "Spreadsheet-style job tracker with interview stages, cover letter status, POC, location, home assignment, whiteboard, notes, status, and AI-generated job summaries from URL."
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Tracker</title>
+<style>
+:root {
+  --primary: #5B47FB;
+  --primary-light: #EEE9FF;
+  --bg: #F7F8FA;
+  --white: #FFFFFF;
+  --border: #E5E7EB;
+  --text: #111827;
+  --muted: #6B7280;
+  --green: #10B981;
+  --green-bg: #ECFDF5;
+  --red: #EF4444;
+  --red-bg: #FFF0F0;
+  --blue: #3B82F6;
+  --blue-bg: #EFF6FF;
+  --yellow: #D97706;
+  --yellow-bg: #FFFBEB;
+  --orange: #F97316;
+  --radius: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 13px; min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  gap: 10px;
+}
+.header h1 { font-size: 16px; font-weight: 700; white-space: nowrap; }
+.header h1 span { color: var(--primary); }
+.header-right { display: flex; gap: 8px; align-items: center; }
+.filter-select {
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  color: var(--text);
+}
+.btn-add {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-add:hover { opacity: 0.88; }
+
+/* STATS */
+.stats {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: var(--bg);
+  border-radius: 20px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+.stat-num { font-weight: 700; font-size: 14px; }
+.stat-label { color: var(--muted); }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; padding: 16px 20px 60px; }
+
+table {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+thead th {
+  background: #F9FAFB;
+  border-bottom: 2px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+thead th.stage-header { text-align: center; background: #F3F0FF; color: var(--primary); }
+thead th.section-divider { border-left: 2px solid var(--border); }
+
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover > td { background: #FAFBFF !important; }
+
+tbody td {
+  padding: 7px 10px;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 12px;
+}
+td.section-divider { border-left: 2px solid var(--border); }
+
+/* ROW STATUS COLORS */
+tr.row-offer > td { background: #F0FDF4; }
+tr.row-rejected > td { background: #FFF5F5; }
+tr.row-withdrawn > td { background: #F9FAFB; opacity: 0.7; }
+
+/* COMPANY CELL */
+.company-cell { display: flex; align-items: center; gap: 5px; min-width: 130px; }
+.company-name { font-weight: 600; font-size: 13px; }
+.info-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 12px; padding: 1px 3px;
+  border-radius: 3px; line-height: 1; opacity: 0.6;
+}
+.info-btn:hover { opacity: 1; color: var(--primary); background: var(--primary-light); }
+
+/* LINK */
+.link-icon { color: var(--blue); text-decoration: none; font-size: 14px; }
+.link-icon:hover { color: var(--primary); }
+.no-link { color: var(--border); }
+
+/* STAGE CELL */
+.stage-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 82px; }
+.stage-cell input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); }
+.stage-date {
+  font-size: 10px; border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 4px; color: var(--muted); width: 86px; background: transparent;
+  font-family: inherit;
+}
+.stage-date:focus { outline: none; border-color: var(--primary); }
+.stage-date-hidden { visibility: hidden; }
+
+/* COVER LETTER */
+.cl-select {
+  font-size: 11px; border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 6px; cursor: pointer; background: transparent; font-family: inherit;
+  width: 110px;
+}
+.cl-sent { background: var(--green-bg); color: var(--green); border-color: #86EFAC; }
+.cl-not_sent { background: var(--red-bg); color: var(--red); border-color: #FCA5A5; }
+.cl-not_required { background: var(--yellow-bg); color: var(--yellow); border-color: #FCD34D; }
+
+/* CHECKBOXES */
+.simple-check { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); display: block; margin: auto; }
+
+/* STATUS BADGE */
+.status-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 500; cursor: pointer; user-select: none;
+  white-space: nowrap;
+}
+.s-active { background: var(--blue-bg); color: var(--blue); }
+.s-offer { background: var(--green-bg); color: var(--green); }
+.s-rejected { background: var(--red-bg); color: var(--red); }
+.s-withdrawn { background: #F3F4F6; color: var(--muted); }
+
+/* EDITABLE TEXT CELL */
+.editable-cell {
+  cursor: pointer; border-radius: 4px; padding: 2px 4px;
+  min-width: 60px; display: inline-block;
+  color: var(--text);
+}
+.editable-cell.empty { color: var(--border); }
+.editable-cell:hover { background: var(--primary-light); color: var(--primary) !important; }
+.inline-edit {
+  border: 1px solid var(--primary); border-radius: 4px;
+  padding: 2px 6px; font-size: 12px; font-family: inherit;
+  background: white; min-width: 80px; width: auto;
+}
+.inline-edit:focus { outline: none; }
+
+/* NOTES */
+.notes-cell {
+  max-width: 140px; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer; color: var(--muted); font-size: 11px;
+  border-radius: 4px; padding: 2px 4px; display: inline-block;
+}
+.notes-cell.empty { color: var(--border); }
+.notes-cell:hover { background: var(--primary-light); color: var(--primary); }
+
+/* ACTION BUTTONS */
+.act-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 3px 5px; border-radius: 4px; font-size: 13px; }
+.act-btn:hover { background: var(--red-bg); color: var(--red); }
+.act-edit:hover { background: var(--primary-light); color: var(--primary); }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 48px; color: var(--muted); }
+.empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+.empty-state h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+
+/* MODAL OVERLAY */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 12px; padding: 24px;
+  width: 520px; max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+.form-row input[type="text"],
+.form-row input[type="url"],
+.form-row input[type="date"],
+.form-row select,
+.form-row textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 13px; font-family: inherit;
+  color: var(--text);
+}
+.form-row textarea { height: 72px; resize: vertical; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light);
+}
+.url-row { display: flex; gap: 8px; }
+.url-row input { flex: 1; }
+.btn-gen {
+  background: var(--primary-light); color: var(--primary); border: none;
+  border-radius: var(--radius); padding: 8px 12px; font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.btn-gen:hover { background: var(--primary); color: white; }
+.btn-gen:disabled { opacity: 0.5; cursor: not-allowed; }
+.summary-hint {
+  font-size: 11px; color: var(--muted); background: #F9FAFB;
+  border-radius: 6px; padding: 7px 10px; margin-top: 6px;
+  line-height: 1.5; display: none;
+}
+.summary-hint.show { display: block; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.btn-cancel { background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 16px; font-size: 13px; cursor: pointer; }
+.btn-cancel:hover { background: var(--bg); }
+.btn-save { background: var(--primary); color: white; border: none; border-radius: var(--radius); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-save:hover { opacity: 0.88; }
+
+/* NOTES MODAL */
+.notes-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35); z-index: 900;
+  align-items: center; justify-content: center;
+}
+.notes-modal-overlay.open { display: flex; }
+.notes-modal {
+  background: white; border-radius: 10px; padding: 20px;
+  width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+.notes-modal h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.notes-modal textarea {
+  width: 100%; height: 130px; padding: 9px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13px; font-family: inherit; resize: vertical;
+}
+.notes-modal textarea:focus { outline: none; border-color: var(--primary); }
+.notes-modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+/* POPOVER */
+.popover {
+  display: none; position: fixed; background: white;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; width: 280px; font-size: 12px;
+  line-height: 1.6; color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 600;
+}
+.popover.open { display: block; }
+.popover h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--primary); }
+.popover-close { float: right; cursor: pointer; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Job <span>Tracker</span></h1>
+  <div class="header-right">
+    <select class="filter-select" id="filterStatus" onchange="renderTable()">
+      <option value="">All</option>
+      <option value="active">Active</option>
+      <option value="offer">Offer</option>
+      <option value="rejected">Rejected</option>
+      <option value="withdrawn">Withdrawn</option>
+    </select>
+    <button class="btn-add" onclick="openAddModal()">+ Add Job</button>
+  </div>
+</div>
+
+<div class="stats" id="statsBar"></div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="min-width:140px">Company</th>
+        <th style="min-width:38px">Link</th>
+        <th style="min-width:100px">POC</th>
+        <th style="min-width:118px">Cover Letter</th>
+        <th style="min-width:88px">Applied</th>
+        <th class="stage-header section-divider" style="min-width:90px">Initial Call</th>
+        <th class="stage-header" style="min-width:90px">1st Interview</th>
+        <th class="stage-header" style="min-width:90px">2nd Interview</th>
+        <th class="stage-header" style="min-width:90px">3rd Interview</th>
+        <th class="stage-header" style="min-width:90px">4th Interview</th>
+        <th class="stage-header" style="min-width:74px;text-align:center">Home Assign</th>
+        <th class="stage-header" style="min-width:74px;text-align:center">Whiteboard</th>
+        <th class="section-divider" style="min-width:90px">Location</th>
+        <th style="min-width:84px">Status</th>
+        <th style="min-width:150px">Notes</th>
+        <th style="min-width:52px"></th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h2 id="modalTitle">Add Job</h2>
+    <div class="form-row">
+      <label>Company Name *</label>
+      <input type="text" id="f-company" placeholder="e.g. Cross River">
+    </div>
+    <div class="form-row">
+      <label>Job URL</label>
+      <div class="url-row">
+        <input type="url" id="f-link" placeholder="https://...">
+        <button class="btn-gen" id="genBtn" onclick="generateSummary()">✨ Auto-fill</button>
+      </div>
+      <div class="summary-hint" id="summaryHint"></div>
+    </div>
+    <div class="form-row">
+      <label>Job Summary</label>
+      <textarea id="f-summary" placeholder="What the company does + what the role is..."></textarea>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0">
+        <label>Point of Contact</label>
+        <input type="text" id="f-poc" placeholder="Name or email">
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label>Location</label>
+        <input type="text" id="f-location" placeholder="Remote / Jerusalem / ...">
+      </div>
+    </div>
+    <div class="form-row-2" style="margin-top:14px">
+      <div class="form-row" style="margin-bottom:0">
+        <label>Cover Letter</label>
+        <select id="f-coverLetter">
+          <option value="">-</option>
+          <option value="sent">Sent</option>
+          <option value="not_sent">Not Sent</option>
+          <option value="not_required">Not Required</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label>Date Applied</label>
+        <input type="date" id="f-appliedDate">
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:14px">
+      <label>Status</label>
+      <select id="f-status">
+        <option value="active">Active</option>
+        <option value="offer">Offer</option>
+        <option value="rejected">Rejected</option>
+        <option value="withdrawn">Withdrawn</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="f-notes" placeholder="Salary, referral, impressions, next steps..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveJob()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES QUICK EDIT -->
+<div class="notes-modal-overlay" id="notesOverlay">
+  <div class="notes-modal">
+    <h3 id="notesMTitle">Notes</h3>
+    <textarea id="notesMTextarea" placeholder="Add notes..."></textarea>
+    <div class="notes-modal-footer">
+      <button class="btn-cancel" onclick="closeNotes()">Cancel</button>
+      <button class="btn-save" onclick="saveNotes()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY POPOVER -->
+<div class="popover" id="summaryPop">
+  <span class="popover-close" onclick="closePop()">x</span>
+  <h4 id="popCompany"></h4>
+  <div id="popContent" style="color:var(--muted)"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'shoham-job-tracker-v2';
+let jobs = [];
+let editingId = null;
+let notesJobId = null;
+
+function uid() { return Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const p = d.split('-');
+  if (p.length !== 3) return d;
+  return p[2] + '/' + p[1] + '/' + p[0].slice(2);
+}
+
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+// ─── DEFAULT DATA ────────────────────────────────────
+function defaultJobs() {
+  return [
+    { id:uid(), company:'Nebius', link:'https://careers.nebius.com/?gh_jid=4766823101',
+      summary:'AI cloud infrastructure company. Senior Product Designer for Observability & Data Visualization - tools for ML engineers monitoring training runs and infrastructure.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'Remote',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'CV and cover letter ready. Application not yet submitted to Greenhouse.' },
+    { id:uid(), company:'Canonical', link:'',
+      summary:'Company behind Ubuntu Linux. Senior Product Designer for enterprise open source developer tools.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'Remote',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'Long application process. Reached out to designers on LinkedIn.' },
+    { id:uid(), company:'Cross River', link:'https://www.comeet.com/jobs/crossriver/C7.00F/senior-product-designer/18.965',
+      summary:'Financial infrastructure company - embedded payments, cards, and lending. Jerusalem office, hybrid 3 days/week.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'Jerusalem (Hybrid)',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'Friend referred ~1 month ago. HR said they have a candidate. Still posting on LinkedIn. Have 3 connections there - reach out before applying.' },
+    { id:uid(), company:'Mosaic AI', link:'https://www.comeet.com/jobs/askai/1A.00C/product-designer/1C.F6C',
+      summary:'Enterprise AI platform for technical support teams. Designing Rep Assistant, Knowledge, Self-Service & Intelligence products on shared Agent Builder.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'Salary entered ~32k. Strong fit - complex B2B SaaS workflows.' },
+    { id:uid(), company:'Hello Heart', link:'',
+      summary:'Mobile health app for heart disease prevention. Role: Senior Designer owning mobile design system.',
+      poc:'Dana Segal - dana.segal@helloheart.com', coverLetter:'', appliedDate:'', location:'',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'Recruiter reached out. Reply drafted (honest about mobile + design system gaps). Awaiting response.' },
+    { id:uid(), company:'PlainID', link:'https://www.comeet.com/jobs/plainid/C4.00C/senior-uiux-product-designer/99.E48',
+      summary:'Authorization platform. Senior UI/UX Product Designer at an AI-native company.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active', notes:'' },
+    { id:uid(), company:'WalkImpact', link:'https://walkimpact.com/JobDetails?id=695e69f8d24c1194365c388f',
+      summary:'Mental Defense startup. AI platform detecting early PTSD signs and guiding families of security forces through recovery. Volunteer with growth path.',
+      poc:'', coverLetter:'sent', appliedDate:'', location:'Tel Aviv (Hybrid - Volunteer)',
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false, status:'active',
+      notes:'Volunteer role. Personal connection - combat vet (armored corps). Mission-driven application.' },
+  ];
+}
+
+// ─── PERSISTENCE ─────────────────────────────────────
+function load() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    jobs = s ? JSON.parse(s) : defaultJobs();
+  } catch(e) { jobs = defaultJobs(); }
+}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs)); }
+
+// ─── STATS ───────────────────────────────────────────
+function renderStats() {
+  const total = jobs.length;
+  const active = jobs.filter(j => j.status === 'active').length;
+  const gotCall = jobs.filter(j => j.stages.initialCall.done).length;
+  const interviewing = jobs.filter(j => j.stages.first.done).length;
+  const offers = jobs.filter(j => j.status === 'offer').length;
+  const rejected = jobs.filter(j => j.status === 'rejected').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat"><span class="stat-num">${total}</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--blue)">${active}</span><span class="stat-label">Active</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--orange)">${gotCall}</span><span class="stat-label">Got Call</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--primary)">${interviewing}</span><span class="stat-label">Interviewing</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--green)">${offers}</span><span class="stat-label">Offers</span></div>
+    <div class="stat"><span class="stat-num" style="color:var(--red)">${rejected}</span><span class="stat-label">Rejected</span></div>
+  `;
+}
+
+// ─── RENDER TABLE ─────────────────────────────────────
+function renderTable() {
+  const filter = document.getElementById('filterStatus').value;
+  const list = filter ? jobs.filter(j => j.status === filter) : jobs;
+  const tbody = document.getElementById('tableBody');
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="16"><div class="empty-state"><div class="icon">📋</div><h3>No jobs yet</h3><p>Click "+ Add Job" to start tracking</p></div></td></tr>`;
+    renderStats(); return;
+  }
+
+  tbody.innerHTML = list.map(j => {
+    const clCls = j.coverLetter ? 'cl-' + j.coverLetter : '';
+    const clLabel = {sent:'Sent', not_sent:'Not Sent', not_required:'Not Required'}[j.coverLetter] || '-';
+    const rowCls = j.status === 'offer' ? 'row-offer' : j.status === 'rejected' ? 'row-rejected' : j.status === 'withdrawn' ? 'row-withdrawn' : '';
+    const sCls = 's-' + (j.status || 'active');
+    const sLabel = {active:'Active', offer:'Offer', rejected:'Rejected', withdrawn:'Withdrawn'}[j.status] || 'Active';
+    const notesText = j.notes ? (j.notes.length > 28 ? j.notes.slice(0,28) + '...' : j.notes) : '+ notes';
+    const notesCls = j.notes ? '' : 'empty';
+
+    const stCell = (key) => {
+      const s = j.stages[key];
+      return `<td class="${key==='initialCall'?'section-divider':''}">
+        <div class="stage-cell">
+          <input type="checkbox" ${s.done?'checked':''} onchange="toggleStage('${j.id}','${key}',this.checked)">
+          <input type="date" class="stage-date${s.done?'':' stage-date-hidden'}" value="${esc(s.date)}" onchange="stageDate('${j.id}','${key}',this.value)">
+        </div></td>`;
+    };
+
+    return `<tr class="${rowCls}" data-id="${j.id}">
+      <td>
+        <div class="company-cell">
+          <span class="company-name">${esc(j.company)}</span>
+          ${j.summary ? `<button class="info-btn" onclick="showPop(event,'${j.id}')" title="Job summary">i</button>` : ''}
+        </div>
+      </td>
+      <td>${j.link ? `<a href="${esc(j.link)}" target="_blank" class="link-icon" title="Open job posting">&#x1F517;</a>` : '<span class="no-link">-</span>'}</td>
+      <td><span class="editable-cell${j.poc?'':' empty'}" onclick="inlineEdit('${j.id}','poc',this)">${esc(j.poc||'+ add')}</span></td>
+      <td>
+        <select class="cl-select ${clCls}" onchange="updateF('${j.id}','coverLetter',this.value);updateCLStyle(this)">
+          <option value="" ${!j.coverLetter?'selected':''}>-</option>
+          <option value="sent" ${j.coverLetter==='sent'?'selected':''}>Sent</option>
+          <option value="not_sent" ${j.coverLetter==='not_sent'?'selected':''}>Not Sent</option>
+          <option value="not_required" ${j.coverLetter==='not_required'?'selected':''}>Not Required</option>
+        </select>
+      </td>
+      <td><span class="editable-cell${j.appliedDate?'':' empty'}" style="font-size:11px;color:var(--muted)" onclick="inlineEditDate('${j.id}','appliedDate',this)">${j.appliedDate?fmtDate(j.appliedDate):'+ date'}</span></td>
+      ${stCell('initialCall')}
+      ${stCell('first')}
+      ${stCell('second')}
+      ${stCell('third')}
+      ${stCell('fourth')}
+      <td style="text-align:center"><input type="checkbox" class="simple-check" ${j.homeAssignment?'checked':''} onchange="updateF('${j.id}','homeAssignment',this.checked)"></td>
+      <td style="text-align:center"><input type="checkbox" class="simple-check" ${j.whiteboard?'checked':''} onchange="updateF('${j.id}','whiteboard',this.checked)"></td>
+      <td class="section-divider"><span class="editable-cell${j.location?'':' empty'}" onclick="inlineEdit('${j.id}','location',this)">${esc(j.location||'+ add')}</span></td>
+      <td><span class="status-badge ${sCls}" onclick="cycleStatus('${j.id}')" title="Click to change">${sLabel}</span></td>
+      <td><span class="notes-cell ${notesCls}" onclick="openNotes('${j.id}')">${esc(notesText)}</span></td>
+      <td style="white-space:nowrap">
+        <button class="act-btn act-edit" onclick="openEditModal('${j.id}')" title="Edit">&#9998;</button>
+        <button class="act-btn" onclick="deleteJob('${j.id}')" title="Delete">&#128465;</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  renderStats();
+}
+
+// ─── STAGE ───────────────────────────────────────────
+function toggleStage(id, key, checked) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  j.stages[key].done = checked;
+  if (!checked) j.stages[key].date = '';
+  save(); renderTable();
+}
+function stageDate(id, key, val) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  j.stages[key].date = val; save();
+}
+
+// ─── FIELD UPDATES ────────────────────────────────────
+function updateF(id, field, value) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  j[field] = value; save();
+}
+function updateCLStyle(sel) {
+  sel.className = 'cl-select' + (sel.value ? ' cl-' + sel.value : '');
+}
+
+function inlineEdit(id, field, cell) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  const val = j[field] || '';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.value = val; inp.className = 'inline-edit';
+  inp.style.width = Math.max(80, val.length * 8) + 'px';
+  cell.replaceWith(inp); inp.focus(); inp.select();
+  function done() { j[field] = inp.value; save(); renderTable(); }
+  inp.addEventListener('blur', done);
+  inp.addEventListener('keydown', e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape') renderTable(); });
+}
+
+function inlineEditDate(id, field, cell) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  const inp = document.createElement('input');
+  inp.type = 'date'; inp.value = j[field] || ''; inp.className = 'inline-edit';
+  cell.replaceWith(inp); inp.focus();
+  function done() { j[field] = inp.value; save(); renderTable(); }
+  inp.addEventListener('blur', done);
+  inp.addEventListener('change', done);
+}
+
+function cycleStatus(id) {
+  const statuses = ['active','offer','rejected','withdrawn'];
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  j.status = statuses[(statuses.indexOf(j.status||'active')+1) % statuses.length];
+  save(); renderTable();
+}
+function deleteJob(id) {
+  if (!confirm('Remove this job?')) return;
+  jobs = jobs.filter(x=>x.id!==id); save(); renderTable();
+}
+
+// ─── NOTES ───────────────────────────────────────────
+function openNotes(id) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  notesJobId = id;
+  document.getElementById('notesMTitle').textContent = j.company + ' - Notes';
+  document.getElementById('notesMTextarea').value = j.notes || '';
+  document.getElementById('notesOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('notesMTextarea').focus(), 60);
+}
+function closeNotes() { document.getElementById('notesOverlay').classList.remove('open'); notesJobId = null; }
+function saveNotes() {
+  if (!notesJobId) return;
+  const j = jobs.find(x=>x.id===notesJobId); if(j) { j.notes = document.getElementById('notesMTextarea').value; save(); renderTable(); }
+  closeNotes();
+}
+
+// ─── POPOVER ─────────────────────────────────────────
+let popOpen = false;
+function showPop(e, id) {
+  e.stopPropagation();
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  document.getElementById('popCompany').textContent = j.company;
+  document.getElementById('popContent').textContent = j.summary || 'No summary.';
+  const pop = document.getElementById('summaryPop');
+  const x = Math.min(e.clientX + 12, window.innerWidth - 300);
+  const y = Math.min(e.clientY - 8, window.innerHeight - 160);
+  pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  pop.classList.add('open'); popOpen = true;
+}
+function closePop() { document.getElementById('summaryPop').classList.remove('open'); popOpen = false; }
+document.addEventListener('click', () => { if(popOpen) closePop(); });
+
+// ─── ADD / EDIT MODAL ─────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add Job';
+  ['f-company','f-link','f-summary','f-poc','f-location','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-coverLetter').value = '';
+  document.getElementById('f-appliedDate').value = todayISO();
+  document.getElementById('f-status').value = 'active';
+  document.getElementById('summaryHint').className = 'summary-hint';
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(() => document.getElementById('f-company').focus(), 60);
+}
+function openEditModal(id) {
+  const j = jobs.find(x=>x.id===id); if(!j) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit - ' + j.company;
+  document.getElementById('f-company').value = j.company || '';
+  document.getElementById('f-link').value = j.link || '';
+  document.getElementById('f-summary').value = j.summary || '';
+  document.getElementById('f-poc').value = j.poc || '';
+  document.getElementById('f-location').value = j.location || '';
+  document.getElementById('f-notes').value = j.notes || '';
+  document.getElementById('f-coverLetter').value = j.coverLetter || '';
+  document.getElementById('f-appliedDate').value = j.appliedDate || '';
+  document.getElementById('f-status').value = j.status || 'active';
+  document.getElementById('summaryHint').className = 'summary-hint';
+  document.getElementById('addModal').classList.add('open');
+}
+function closeModal() { document.getElementById('addModal').classList.remove('open'); editingId = null; }
+function saveJob() {
+  const company = document.getElementById('f-company').value.trim();
+  if (!company) { alert('Company name is required.'); return; }
+  const data = {
+    company,
+    link: document.getElementById('f-link').value.trim(),
+    summary: document.getElementById('f-summary').value.trim(),
+    poc: document.getElementById('f-poc').value.trim(),
+    location: document.getElementById('f-location').value.trim(),
+    coverLetter: document.getElementById('f-coverLetter').value,
+    appliedDate: document.getElementById('f-appliedDate').value,
+    status: document.getElementById('f-status').value,
+    notes: document.getElementById('f-notes').value.trim()
+  };
+  if (editingId) {
+    const j = jobs.find(x=>x.id===editingId); if(j) Object.assign(j, data);
+  } else {
+    jobs.push({ id:uid(), ...data,
+      stages:{ initialCall:{done:false,date:''}, first:{done:false,date:''}, second:{done:false,date:''}, third:{done:false,date:''}, fourth:{done:false,date:''} },
+      homeAssignment:false, whiteboard:false
+    });
+  }
+  save(); renderTable(); closeModal();
+}
+
+// ─── AUTO SUMMARY ─────────────────────────────────────
+async function generateSummary() {
+  const url = document.getElementById('f-link').value.trim();
+  if (!url) { alert('Enter a job URL first.'); return; }
+  const btn = document.getElementById('genBtn');
+  const hint = document.getElementById('summaryHint');
+  btn.disabled = true; btn.textContent = '⏳ Fetching...';
+  hint.className = 'summary-hint show';
+  hint.textContent = 'Fetching job page...';
+  try {
+    const res = await window.cowork.callMcpTool('mcp__workspace__web_fetch', { url });
+    const raw = res?.content?.[0]?.text || '';
+    if (raw.length < 100) throw new Error('Page too short or JS-rendered.');
+    hint.textContent = 'Generating summary...';
+    const summary = await window.cowork.askClaude(
+      'Give me exactly 2 sentences: (1) What does this company do? (2) What is this specific role? Be concrete and brief. No marketing language.',
+      [{ type:'text', text: raw.slice(0, 9000) }]
+    );
+    document.getElementById('f-summary').value = summary;
+    hint.textContent = 'Done - summary added above.';
+    // Try to auto-fill company name if empty
+    const cn = document.getElementById('f-company');
+    if (!cn.value) {
+      const m = raw.match(/at\s+([A-Z][A-Za-z\s&]{2,30?})\b/);
+      if (m) cn.value = m[1].trim();
+    }
+  } catch(err) {
+    hint.textContent = 'Could not auto-fetch (page may be JS-rendered). Enter summary manually.';
+  }
+  btn.disabled = false; btn.textContent = '✨ Auto-fill';
+}
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeNotes(); closePop(); }
+});
+document.getElementById('addModal').addEventListener('click', e => { if(e.target === document.getElementById('addModal')) closeModal(); });
+document.getElementById('notesOverlay').addEventListener('click', e => { if(e.target === document.getElementById('notesOverlay')) closeNotes(); });
+
+// ─── INIT ─────────────────────────────────────────────
+load();
+renderTable();
+</script>
+</body>
+</html>
